@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlexStore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #0d0d0d;
+      color: #fff;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 { font-size: 3rem; margin-bottom: 1.5rem; }
+    .buttons { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
+    .buttons a {
+      text-decoration: none;
+      padding: 1rem 2rem;
+      background: #1f1f1f;
+      color: #0ff;
+      border: 2px solid #0ff;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: 0.3s;
+    }
+    .buttons a:hover {
+      background: #0ff;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to FlexStore</h1>
+  <p>Choose your region to start shopping:</p>
+  <div class="buttons">
+    <a href="pk.html">🇵🇰 Shop Pakistan</a>
+    <a href="int.html">🌍 Shop Worldwide</a>
+  </div>
+</body>
+</html>
