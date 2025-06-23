@@ -3,53 +3,166 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FlexStore Pakistan</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <title>🇵🇰 Pakistan Store - FlexStore</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: #0d0d0d;
       font-family: 'Montserrat', sans-serif;
-      color: white;
+      background: #0d0d0d;
+      color: #fff;
       padding: 2rem;
     }
-    h1 { text-align: center; color: #0ff; }
-    .product { background: #1a1a1a; margin: 1rem auto; padding: 1rem; border-radius: 8px; width: 90%; max-width: 500px; }
-    .product-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
-    .product-desc { margin-bottom: 0.5rem; }
-    .product-price { color: #0ff; margin-bottom: 0.5rem; }
+    h1 { text-align: center; font-size: 2.5rem; margin-bottom: 2rem; }
+    .store {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    .product {
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .product h3 { margin: 1rem 0 0.5rem; }
+    .product p { margin-bottom: 1rem; }
+    .product button {
+      background: #0ff;
+      color: #000;
+      padding: 0.6rem 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .cart {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #111;
+      border: 1px solid #0ff;
+      padding: 1rem;
+      border-radius: 10px;
+      max-width: 300px;
+      display: none;
+      z-index: 999;
+    }
+    .cart.active { display: block; }
+    .cart h2 { margin-bottom: 1rem; font-size: 1.2rem; color: #0ff; }
+    .cart-item { margin-bottom: 1rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem; }
+    .cart-item span { display: block; }
+    .cart-total { margin-top: 1rem; font-weight: bold; }
+    .checkout-btn {
+      margin-top: 1rem;
+      background: #0ff;
+      color: #000;
+      padding: 0.6rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #cartToggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #0ff;
+      color: #000;
+      padding: 0.5rem 1rem;
+      border: none;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
-  <h1>🇵🇰 FlexStore Pakistan</h1>
-  <div class="product">
-    <div class="product-title">Rolex Batman (First Copy)</div>
-    <div class="product-desc">High-quality replica with black & blue bezel.</div>
-    <div class="product-price">PKR 4,500</div>
+  <h1>🇵🇰 Pakistan Store</h1>
+  <button id="cartToggle">🛒 View Cart</button>
+
+  <div class="store" id="productList"></div>
+
+  <div class="cart" id="cart">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <div class="cart-total" id="cartTotal"></div>
+    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
   </div>
-  <div class="product">
-    <div class="product-title">Audemars Piguet Royal Oak (First Copy)</div>
-    <div class="product-desc">Elegant brushed steel design with luxury face.</div>
-    <div class="product-price">PKR 4,500</div>
-  </div>
-  <div class="product">
-    <div class="product-title">Tissot Chrono XL (First Copy)</div>
-    <div class="product-desc">Chronograph replica with modern sporty style.</div>
-    <div class="product-price">PKR 4,500</div>
-  </div>
-  <div class="product">
-    <div class="product-title">Casio G-Shock (First Copy)</div>
-    <div class="product-desc">Rugged digital-analog hybrid replica.</div>
-    <div class="product-price">PKR 4,500</div>
-  </div>
-  <div class="product">
-    <div class="product-title">Seiko 5 Sports (First Copy)</div>
-    <div class="product-desc">Stylish everyday watch with automatic movement style.</div>
-    <div class="product-price">PKR 4,500</div>
-  </div>
-  <div class="product">
-    <div class="product-title">Apple AirPods Pro (First Copy)</div>
-    <div class="product-desc">Premium TWS earbuds with active noise cancellation.</div>
-    <div class="product-price">PKR 4,200</div>
-  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: "Rolex Batman", price: 4500, description: "First copy with black & blue bezel.", img: "https://via.placeholder.com/250x180?text=Rolex+Batman" },
+      { id: 2, name: "AP Royal Oak", price: 4500, description: "Elegant brushed steel design.", img: "https://via.placeholder.com/250x180?text=AP+Royal+Oak" },
+      { id: 3, name: "Tissot Chrono XL", price: 4500, description: "Sporty and modern replica.", img: "https://via.placeholder.com/250x180?text=Tissot+XL" },
+      { id: 4, name: "AirPods Pro", price: 4200, description: "TWS with ANC - first copy.", img: "https://via.placeholder.com/250x180?text=AirPods+Pro" },
+      { id: 5, name: "Casio G-Shock", price: 3500, description: "Shock resistant digital watch.", img: "https://via.placeholder.com/250x180?text=Casio+G-Shock" },
+      { id: 6, name: "Hublot Big Bang", price: 4800, description: "Luxury first copy chronograph.", img: "https://via.placeholder.com/250x180?text=Hublot+Big+Bang" },
+      { id: 7, name: "Tag Heuer Carrera", price: 4600, description: "Stylish racing-inspired replica.", img: "https://via.placeholder.com/250x180?text=Tag+Heuer+Carrera" },
+      { id: 8, name: "Patek Philippe Nautilus", price: 4900, description: "Iconic design & finish replica.", img: "https://via.placeholder.com/250x180?text=Patek+Nautilus" }
+    ];
+
+    const productList = document.getElementById("productList");
+    const cartItems = document.getElementById("cartItems");
+    const cartTotal = document.getElementById("cartTotal");
+    const cartBox = document.getElementById("cart");
+    const cartToggle = document.getElementById("cartToggle");
+    let cart = [];
+
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "product";
+      card.innerHTML = `
+        <img src="${product.img}" alt="${product.name}" />
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        <p>Price: PKR ${product.price}</p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+      `;
+      productList.appendChild(card);
+    });
+
+    function addToCart(productId) {
+      const existing = cart.find(item => item.id === productId);
+      if (existing) {
+        existing.qty++;
+      } else {
+        const product = products.find(p => p.id === productId);
+        cart.push({ ...product, qty: 1 });
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        total += item.qty * item.price;
+        cartItems.innerHTML += `
+          <div class="cart-item">
+            <span><strong>${item.name}</strong></span>
+            <span>Qty: ${item.qty}</span>
+            <span>Subtotal: PKR ${item.qty * item.price}</span>
+          </div>
+        `;
+      });
+      cartTotal.innerText = `Total: PKR ${total}`;
+    }
+
+    cartToggle.onclick = () => {
+      cartBox.classList.toggle("active");
+    };
+
+    function checkout() {
+      alert("Checkout coming soon. Payment: JazzCash, EasyPaisa, Debit/Credit Card.");
+    }
+  </script>
 </body>
 </html>
