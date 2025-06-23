@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FlexStore</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -12,32 +13,154 @@
       background: #0d0d0d;
       color: #fff;
       padding: 2rem;
+    }
+    h1 { text-align: center; font-size: 3rem; margin-bottom: 1.5rem; }
+    .store {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    .product {
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 12px;
       text-align: center;
     }
-    h1 { font-size: 3rem; margin-bottom: 1.5rem; }
-    .buttons { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; }
-    .buttons a {
-      text-decoration: none;
-      padding: 1rem 2rem;
-      background: #1f1f1f;
-      color: #0ff;
-      border: 2px solid #0ff;
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
       border-radius: 8px;
-      font-weight: 700;
-      transition: 0.3s;
     }
-    .buttons a:hover {
+    .product h3 { margin: 1rem 0 0.5rem; }
+    .product p { margin-bottom: 1rem; }
+    .product button {
       background: #0ff;
       color: #000;
+      padding: 0.6rem 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .cart {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #111;
+      border: 1px solid #0ff;
+      padding: 1rem;
+      border-radius: 10px;
+      max-width: 300px;
+      display: none;
+      z-index: 999;
+    }
+    .cart.active { display: block; }
+    .cart h2 { margin-bottom: 1rem; font-size: 1.2rem; color: #0ff; }
+    .cart-item { margin-bottom: 1rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem; }
+    .cart-item span { display: block; }
+    .cart-total { margin-top: 1rem; font-weight: bold; }
+    .checkout-btn {
+      margin-top: 1rem;
+      background: #0ff;
+      color: #000;
+      padding: 0.6rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #cartToggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #0ff;
+      color: #000;
+      padding: 0.5rem 1rem;
+      border: none;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1000;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to FlexStore</h1>
-  <p>Choose your region to start shopping:</p>
-  <div class="buttons">
-    <a href="pk.html">🇵🇰 Shop Pakistan</a>
-    <a href="int.html">🌍 Shop Worldwide</a>
+  <h1>FlexStore</h1>
+
+  <button id="cartToggle">🛒 View Cart</button>
+
+  <div class="store" id="productList"></div>
+
+  <div class="cart" id="cart">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <div class="cart-total" id="cartTotal"></div>
+    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
   </div>
+
+  <script>
+    const products = [
+      { id: 1, name: "Rolex Batman", price: 4500, region: "pk", description: "First copy with black & blue bezel.", img: "https://via.placeholder.com/250x180?text=Rolex+Batman" },
+      { id: 2, name: "AP Royal Oak", price: 4500, region: "pk", description: "Elegant brushed steel design.", img: "https://via.placeholder.com/250x180?text=AP+Royal+Oak" },
+      { id: 3, name: "Tissot Chrono XL", price: 4500, region: "pk", description: "Sporty and modern replica.", img: "https://via.placeholder.com/250x180?text=Tissot+XL" },
+      { id: 4, name: "AirPods Pro", price: 4200, region: "pk", description: "TWS with ANC - first copy.", img: "https://via.placeholder.com/250x180?text=AirPods+Pro" },
+    ];
+
+    const productList = document.getElementById("productList");
+    const cartItems = document.getElementById("cartItems");
+    const cartTotal = document.getElementById("cartTotal");
+    const cartBox = document.getElementById("cart");
+    const cartToggle = document.getElementById("cartToggle");
+    let cart = [];
+
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "product";
+      card.innerHTML = `
+        <img src="${product.img}" alt="${product.name}" />
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        <p>Price: PKR ${product.price}</p>
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+      `;
+      productList.appendChild(card);
+    });
+
+    function addToCart(productId) {
+      const existing = cart.find(item => item.id === productId);
+      if (existing) {
+        existing.qty++;
+      } else {
+        const product = products.find(p => p.id === productId);
+        cart.push({ ...product, qty: 1 });
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      cartItems.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        total += item.qty * item.price;
+        cartItems.innerHTML += `
+          <div class="cart-item">
+            <span><strong>${item.name}</strong></span>
+            <span>Qty: ${item.qty}</span>
+            <span>Subtotal: PKR ${item.qty * item.price}</span>
+          </div>
+        `;
+      });
+      cartTotal.innerText = `Total: PKR ${total}`;
+    }
+
+    cartToggle.onclick = () => {
+      cartBox.classList.toggle("active");
+    };
+
+    function checkout() {
+      alert("Checkout system coming next. Payment, address, and full flow will be added.");
+    }
+  </script>
 </body>
 </html>
